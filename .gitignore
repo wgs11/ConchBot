@@ -1,0 +1,7 @@
+*.ini
+settings.py
+webCalls.py
+Discord.py
+*.json
+*.txt
+Points.py
