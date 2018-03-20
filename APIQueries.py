@@ -150,7 +150,7 @@ def getGame():
         else:
             print("we need to load the game from the api or be lazy")
     else:
-        print("Stream is offline")
+        ("Stream is offline")
     return game,id
 
 # try:

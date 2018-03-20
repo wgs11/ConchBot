@@ -1,6 +1,6 @@
 from Sock import *
 from helperfunctions import getBits, addBits, getUser, getMessage
-from initialize import joinRoom
+from initialize import joinRoom, checkSettings
 from lineParser import commandCheck
 
 
@@ -30,4 +30,5 @@ def doChat():
 
 
 if __name__ == '__main__':
+    checkSettings()
     doChat()

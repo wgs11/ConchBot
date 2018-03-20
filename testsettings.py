@@ -1,0 +1,9 @@
+HOST = "irc.twitch.tv"
+PORT = 6667
+IDENT = "sheppy"
+PASS = "oauth:qr9hkh1zmpgp5mjachmg312uhy3pem"
+CHANNEL = "conch_bot"
+CLIENTID = "o7ss5wsbwgenfcdehft2hwou5ij9r5"
+OAUTH = "oauth:48phvo8fm5luco3j0g4uo7ck6m87s5"
+server_memreq = "CAP REQ :twitch.tv/membership"
+server_tagreq = "CAP REQ :twitch.tv/tags"

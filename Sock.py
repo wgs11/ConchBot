@@ -1,6 +1,7 @@
 import socket
 
-from settings import HOST, PORT, PASS, IDENT, CHANNEL, server_memreq, server_tagreq
+from settings import *
+
 
 
 def openSocket():
