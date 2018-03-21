@@ -19,6 +19,7 @@ def followTime(user):
         hope = datetime.strptime(hope,'%Y-%m-%dT%H:%M:%SZ')
         now = datetime.utcnow()
         timedelta = now - hope
+        timedelta = timedelta[:-7]
         return timedelta
     except urllib.error.HTTPError as error:
         data = error.read()
@@ -36,7 +37,6 @@ def getRecord(catid):
         thing = catJson['data'][0]
         if thing.get('runs'):
             player = catJson['data'][0]['runs'][0]['run']['players'][0]['name']
-#            player = lookUpUser(player)
             igt = catJson['data'][0]['runs'][0]['run']['times']['ingame_t']
             if not igt == 0:
                 record = translate(igt)

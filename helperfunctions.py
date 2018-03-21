@@ -14,14 +14,11 @@ from Sock import sendMessage
 from colorcommands import incrementcolor
 from settings import CHANNEL
 from timedmessage import start_timer, end_timer
-from webCalls import donate
+from webCalls import doDonate
 
 
-def check_vars():
-    config = ConfigParser()
-    config.read('settings.ini')
-    return config.has_option("VARS","CHANNEL")
-
+################MOD COMMANDS###################
+#EACH OF THESE PERFORMS modCheck(user)
 def addcom(user, words, s):
     config = ConfigParser()
     config.read('commands.ini', encoding='utf-8')
@@ -42,6 +39,24 @@ def addcom(user, words, s):
                 config.set(str(command), 'output_val', str(output))
                 config.write(codecs.open('commands.ini', 'wb+', 'utf-8'))
                 sendMessage(s, "Command Added")
+
+
+def donate(user, words, s):
+    if not modCheck(user):
+        sendMessage(s, "Only mods can use this command.")
+    else:
+        if len(words) < 3:
+            sendMessage(s, "Make sure to format the command as !donate [amount] [category")
+        else:
+            amount = words[1]
+            category = words[2].strip(' \t\n\r')
+            incentiveCheck = ConfigParser()
+            incentiveCheck.read('incentives.ini')
+            if incentiveCheck.has_section(category):
+                doDonate(amount, category)
+                sendMessage(s, "The money has been moved to an offshore account. Don't call us, we won't call you.")
+            else:
+                sendMessage(s, "That's not a real incentive, guess again Pinocchio.")
 
 
 def add(user, color, value, socket):
@@ -116,6 +131,25 @@ def deletecommand(user, words, socket, config):
                 sendMessage(socket, "Command Deleted")
 
 
+def addQuote(user, words, socket):
+    if not modCheck(user):
+        sendMessage(socket, "Only mods can use this command.")
+    else:
+        quote = ""
+        for word in words[1:]:
+            quote = quote + word.strip() + " "
+        quote = quote[:-1]
+        addQuote(quote)
+        sendMessage(socket, quote + " was added.")
+
+
+######################################
+
+################UTILITY FUNCTIONS###############
+# These functions are part of commands that can
+# be invoked by anyone.
+
+
 def check(user, socket):
     userCheck = ConfigParser()
     userCheck.read('times.ini')
@@ -147,18 +181,6 @@ def randomQuote():
     lines = open('quotes.txt').read().splitlines()
     line = random.choice(lines)
     return line
-
-
-def addQuote(user, words, socket):
-    if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command.")
-    else:
-        quote = ""
-        for word in words[1:]:
-            quote = quote + word.strip() + " "
-        quote = quote[:-1]
-        addQuote(quote)
-        sendMessage(socket, quote + " was added.")
 
 
 def getRandomLine():
@@ -219,22 +241,6 @@ def addBits(bits):
         check.close()
         return pushups
 
-def donate(user, words, s):
-    if not modCheck(user):
-        sendMessage(s, "Only mods can use this command.")
-    else:
-        if len(words) < 3:
-            sendMessage(s, "Make sure to format the command as !donate [amount] [category")
-        else:
-            amount = words[1]
-            category = words[2].strip(' \t\n\r')
-            incentiveCheck = ConfigParser()
-            incentiveCheck.read('incentives.ini')
-            if incentiveCheck.has_section(category):
-                donate(amount, category)
-                sendMessage(s, "The money has been moved to an offshore account. Don't call us, we won't call you.")
-            else:
-                sendMessage(s, "That's not a real incentive, guess again Pinocchio.")
 
 def modCheck(user):
     config = ConfigParser()
@@ -286,6 +292,7 @@ def getPushups():
         return str(math.floor(int(pushups)/10))
     else:
         return "There has been a problem."
+
 
 def exit_program():
     sys.exit(0)
