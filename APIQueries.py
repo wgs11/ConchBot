@@ -9,18 +9,33 @@ from settings import CLIENTID, CHANNEL
 
 
 def followTime(user):
-    url = 'https://api.twitch.tv/kraken/users/'+user+'/follows/channels/'+CHANNEL
-    r = Request(url)
+    print(user)
+    alturl = 'https://api.twitch.tv/helix/users?login='+user+'&login=conch_bot'
+    r = Request(alturl)
     r.add_header('Client-ID',CLIENTID)
     try:
         a = urlopen(r)
-        streamjson = json.loads(a.read())
-        hope = streamjson['created_at']
-        hope = datetime.strptime(hope,'%Y-%m-%dT%H:%M:%SZ')
-        now = datetime.utcnow()
-        timedelta = now - hope
-        timedelta = timedelta[:-7]
-        return timedelta
+        streamjson = json.loads(a.read())['data']
+        print(streamjson)
+        uid1 = streamjson[0]['id']
+        uid2 = streamjson[1]['id']
+        print(uid1,uid2)
+        followurl = 'https://api.twitch.tv/helix/users/follows?from_id='+uid1+'&to_id='+uid2
+        s = Request(followurl)
+        s.add_header('Client-ID',CLIENTID)
+        try:
+            b = urlopen(s)
+            stuff = json.loads(b.read())
+            stuff = stuff['data'][0]['followed_at']
+            followed_at = datetime.strptime(stuff,'%Y-%m-%dT%H:%M:%SZ')
+            now = datetime.utcnow()
+            timedelta = now - followed_at
+            timedelta = str(timedelta)[:-7]
+            return timedelta
+        except urllib.error.HTTPError as error:
+            data = error.read()
+            print(data)
+            return
     except urllib.error.HTTPError as error:
         data = error.read()
         print(data)
@@ -173,7 +188,7 @@ def getGame():
 
 
 def checkLive():
-    url = 'https://api.twitch.tv/kraken/streams/' + CHANNEL
+    url = 'https://api.twitch.tv/helix/streams/' + CHANNEL
     r = Request(url)
     r.add_header('Client-ID', CLIENTID)
     try:

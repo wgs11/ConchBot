@@ -22,6 +22,10 @@ def commandCheck(user, line, s):
             color = words[1]
             value = words[2]
             add(user, color, value, s)
+    elif command == "!songrequest":
+        print("do nothing")
+    elif command == "!sr":
+        print("do nothing")
     elif command == "!donate":
         donate(user, words, s)
     elif command == "!deduct":

@@ -23,7 +23,7 @@ def addcom(user, words, s):
     config = ConfigParser()
     config.read('commands.ini', encoding='utf-8')
     if not modCheck(user):
-        sendMessage(s, "Only mods can use this command.")
+        refuse(s)
     else:
         if len(words) < 3:
             sendMessage(s, "Please use format: !addcom [command] [message]")
@@ -43,7 +43,7 @@ def addcom(user, words, s):
 
 def donate(user, words, s):
     if not modCheck(user):
-        sendMessage(s, "Only mods can use this command.")
+        refuse(s)
     else:
         if len(words) < 3:
             sendMessage(s, "Make sure to format the command as !donate [amount] [category")
@@ -61,7 +61,7 @@ def donate(user, words, s):
 
 def add(user, color, value, socket):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command.")
+        refuse(socket)
     else:
         if not helpInts(value):
             sendMessage(socket, "Please format the add command properly.")
@@ -71,7 +71,7 @@ def add(user, color, value, socket):
 
 def deduct(user, value, socket):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command")
+        refuse(socket)
     else:
         try:
             push = int(value)
@@ -82,7 +82,7 @@ def deduct(user, value, socket):
 
 def timer(user, line, socket):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command.")
+        refuse(socket)
     else:
         words = line.split(maxsplit=3)
         if helpInts(words[2]):
@@ -94,7 +94,7 @@ def timer(user, line, socket):
 
 def stop(user, words, socket):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command.")
+        refuse(socket)
     else:
         if len(words) == 2:
             name = words[1]
@@ -103,7 +103,7 @@ def stop(user, words, socket):
 
 def addquote(user, words, socket):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command.")
+        refuse(socket)
     else:
         if len(words) > 1:
             quote = ""
@@ -116,7 +116,7 @@ def addquote(user, words, socket):
 
 def deletecommand(user, words, socket, config):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command")
+        refuse(socket)
     else:
         if not len(words) == 2:
             sendMessage(socket, "Please use format: !delcom [command]")
@@ -133,7 +133,7 @@ def deletecommand(user, words, socket, config):
 
 def addQuote(user, words, socket):
     if not modCheck(user):
-        sendMessage(socket, "Only mods can use this command.")
+        refuse(socket)
     else:
         quote = ""
         for word in words[1:]:
@@ -240,6 +240,11 @@ def addBits(bits):
         check.write(str(current))
         check.close()
         return pushups
+
+
+
+def refuse(socket):
+    sendMessage(socket, "Only mods can use this command.")
 
 
 def modCheck(user):
