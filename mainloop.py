@@ -1,5 +1,5 @@
 from Sock import openSocket, sendServerMessage, sendMessage
-from helperfunctions import getBits, addBits, getUser, getMessage
+from helperfunctions import getBits, addBits, getUser, getMessage, startTracking, endTracking
 from initialize import joinRoom, checkSettings
 from lineParser import commandCheck
 
@@ -18,6 +18,16 @@ def doChat():
         temp = readbuffer.split("\n")
         readbuffer = temp.pop()
         for line in temp:
+            print(line)
+            ##Wipe time_in on PART to prevent weirdness if PART comes before JOIN##
+            if "JOIN" in line and not ("PRIVMSG" in line):
+                user, rest = line.split('!', maxsplit=1)
+                user = user[1:]
+                startTracking(user)
+            if "PART" in line and not ("PRIVMSG" in line):
+                user, rest = line.split('!', maxsplit=1)
+                user = user[1:]
+                endTracking(user)
             if "PING :tmi.twitch.tv" in line:
                 sendServerMessage(s, line.replace("PING", "PONG"))
                 print(line)

@@ -5,6 +5,7 @@ import random
 import re
 import sys
 import urllib.error
+from datetime import datetime
 from configparser import ConfigParser
 from pathlib import Path
 from urllib.request import urlopen
@@ -15,10 +16,13 @@ from colorcommands import incrementcolor
 from settings import CHANNEL
 from timedmessage import start_timer, end_timer
 from webCalls import doDonate
+from guidedSplits import guidedSplits
 
 
 ################MOD COMMANDS###################
 #EACH OF THESE PERFORMS modCheck(user)
+
+
 def addcom(user, words, s):
     config = ConfigParser()
     config.read('commands.ini', encoding='utf-8')
@@ -40,6 +44,11 @@ def addcom(user, words, s):
                 config.write(codecs.open('commands.ini', 'wb+', 'utf-8'))
                 sendMessage(s, "Command Added")
 
+def makesplits(user, s):
+    if not modCheck(user):
+        refuse(s)
+    else:
+        guidedSplits()
 
 def donate(user, words, s):
     if not modCheck(user):
@@ -297,6 +306,97 @@ def getPushups():
         return str(math.floor(int(pushups)/10))
     else:
         return "There has been a problem."
+
+
+def startTracking(user):
+    config = ConfigParser()
+    config.read('times.ini')
+    if not config.has_section(user):
+        config.add_section(user)
+    config.set(user, 'time_in', str(datetime.utcnow()))
+    with open('times.ini', 'w') as configfile:
+        config.write(configfile)
+
+
+def endTracking(user):
+    config = ConfigParser()
+    config.read('times.ini')
+    if not config.has_section(user):
+        print("Probably new user left too quickly, carry on.")
+    else:
+        if config.has_option(user, 'time_in'):
+            if config.has_option(user, "chat_time"):
+                cur_chat_time = config.getfloat(user, "chat_time")
+                in_time = config.get(user, 'time_in')
+                out_time = str(datetime.utcnow())
+                date_in = datetime.strptime(in_time[:-7], "%Y-%m-%d %H:%M:%S")
+                date_out = datetime.strptime(out_time[:-7], "%Y-%m-%d %H:%M:%S")
+                time_spent = (date_out - date_in).total_seconds()
+                cur_chat_time = cur_chat_time + time_spent
+                config.set(user, "chat_time", str(cur_chat_time))
+                print(str((date_out - date_in).total_seconds()))
+            else:
+                in_time = config.get(user, 'time_in')
+                out_time = str(datetime.utcnow())
+
+                date_in = datetime.strptime(in_time[:-7], "%Y-%m-%d %H:%M:%S")
+                date_out = datetime.strptime(out_time[:-7], "%Y-%m-%d %H:%M:%S")
+                time_spent = (date_out - date_in).total_seconds()
+                config.set(user, "chat_time", str(time_spent))
+            config.remove_option(user, "time_in")
+        else:
+            print("user left too quickly")
+        with open('times.ini', 'w') as configfile:
+            config.write(configfile)
+
+    #SCENARIOS WHEN USER ASKS FOR CHAT_TIME#
+            #VARS: time_in, chat_time
+            # In config
+            # 1) time_in, chat_time
+                # do a calc. return chat time
+            # 2) time_in, no chat_time,
+                # do a calc, return chat_time
+            # 3) no time_in, chat_time
+                # return chat time
+            # 4) no time_in, no chat_time
+                # previously left too fast, treat same as not in config
+            # not in config
+                # inform user we need a few minutes to update
+
+
+def hangoutTime(user):
+    config = ConfigParser()
+    config.read('times.ini')
+    # JOIN w/chat time
+    if config.has_section(user):
+        if config.has_option(user, "time_in"):
+            cur_time = str(datetime.utcnow())
+            in_time = config.get(user, 'time_in')
+            date_in = datetime.strptime(in_time[:-7], "%Y-%m-%d %H:%M:%S")
+            date_out = datetime.strptime(cur_time[:-7], "%Y-%m-%d %H:%M:%S")
+            time_spent = (date_out - date_in).total_seconds()
+            print("we need to get time_in for some math")
+            if config.has_option(user, "chat_time"):
+                cur_chat_time = config.getfloat(user, "chat_time")
+                config.set(user, "time_in", cur_time)
+                with open('times.ini', 'w') as configfile:
+                    config.write(configfile)
+                return cur_chat_time + time_spent
+            else:
+                return time_spent
+        else:
+            if config.has_option(user, "chat_time"):
+                return config.getfloat(user, "chat_time")
+            else:
+                return 0
+    else:
+        return 0
+
+
+
+
+
+
 
 
 def exit_program():

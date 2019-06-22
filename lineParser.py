@@ -1,7 +1,6 @@
 from APIQueries import followTime, upTime
 from helperfunctions import *
 
-
 # commandCheck parses the message portion of each line
 # Each command here is not a simple text response, but
 # instead requires either calculation, data fetching
@@ -22,10 +21,6 @@ def commandCheck(user, line, s):
             color = words[1]
             value = words[2]
             add(user, color, value, s)
-    elif command == "!songrequest":
-        print("do nothing")
-    elif command == "!sr":
-        print("do nothing")
     elif command == "!donate":
         donate(user, words, s)
     elif command == "!deduct":
@@ -57,12 +52,17 @@ def commandCheck(user, line, s):
             sendMessage(s, "You gonna ask me something or just say my name cus you like how it sounds?")
         else:
             sendMessage(s,  getRandomLine())
+    elif command == "!talking":
+        time = str(hangoutTime(user))
+        sendMessage(s, "This is a test function, but it seems "+user+" has spent about "+time+" in chat this month.")
     elif command == "!following":
         time = str(followTime(user))
         if len(time) < 1:
             sendMessage(s, user + " doesn't follow the channel.")
         else:
             sendMessage(s, user + " has been following for " + str(time))
+    elif command == "!makesplits":
+        makesplits(user,s)
     elif command == "!commands":
         output = "Channel Commands: "
         for command in config.sections():

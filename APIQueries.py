@@ -10,7 +10,7 @@ from settings import CLIENTID, CHANNEL
 
 def followTime(user):
     print(user)
-    alturl = 'https://api.twitch.tv/helix/users?login='+user+'&login=conch_bot'
+    alturl = 'https://api.twitch.tv/helix/users?login='+user+'&login='+CHANNEL
     r = Request(alturl)
     r.add_header('Client-ID',CLIENTID)
     try:
@@ -19,15 +19,16 @@ def followTime(user):
         print(streamjson)
         uid1 = streamjson[0]['id']
         uid2 = streamjson[1]['id']
-        print(uid1,uid2)
+        print(uid1, uid2)
         followurl = 'https://api.twitch.tv/helix/users/follows?from_id='+uid1+'&to_id='+uid2
         s = Request(followurl)
         s.add_header('Client-ID',CLIENTID)
         try:
             b = urlopen(s)
             stuff = json.loads(b.read())
+
             stuff = stuff['data'][0]['followed_at']
-            followed_at = datetime.strptime(stuff,'%Y-%m-%dT%H:%M:%SZ')
+            followed_at = datetime.strptime(stuff, '%Y-%m-%dT%H:%M:%SZ')
             now = datetime.utcnow()
             timedelta = now - followed_at
             timedelta = str(timedelta)[:-7]
